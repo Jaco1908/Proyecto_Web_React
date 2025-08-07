@@ -8,16 +8,28 @@ function Register({ onUserChange }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-
-    const newUser = {
-      name,
-      email,
-      picture: "/images/user.png", // Imagen por defecto
-    };
-
-    onUserChange(newUser); // Simula registro exitoso
+    try {
+      const res = await fetch('http://localhost:3000/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre: name,
+          email,
+          password,
+          picture: "/images/user.png"
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        onUserChange(data); // Usuario registrado y logueado
+      } else {
+        alert(data.error || 'Error al registrar');
+      }
+    } catch {
+      alert('Error de conexión');
+    }
   };
 
   return (

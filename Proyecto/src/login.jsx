@@ -5,10 +5,25 @@ function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log('Login con:', email, password);
-    // Aquí iría la lógica real de autenticación
+    try {
+      const res = await fetch('http://localhost:4000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        // Aquí deberías notificar al App.jsx (como con onUserChange)
+        // window.location.href = '/'; // O usa navigate si usas react-router
+        alert('Login exitoso');
+      } else {
+        alert(data.error || 'Error al iniciar sesión');
+      }
+    } catch {
+      alert('Error de conexión');
+    }
   };
 
   return (
