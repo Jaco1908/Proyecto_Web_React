@@ -15,6 +15,7 @@ const GoogleAuth = ({ onUserChange }) => {
     // ✅ Notifica al componente padre (App.jsx) que hay sesión iniciada
     if (onUserChange) {
       onUserChange(userInfo);
+      
     }
   };
 
