@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'; // Asegúrate de importar Link si lo usas
 import '../assets/css/plantilla/header.css';
 
+
 function Header({ user, onLogout }) {
   return (
     <header>

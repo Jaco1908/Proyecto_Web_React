@@ -2,24 +2,27 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useState, useEffect } from 'react';
 import Layout from './componentes/Layout';
 import Home from './Home.jsx';
+import Header from './componentes/Header.jsx';
 import GoogleAuth from './GoogleAuth.jsx';
+import Login from './login.jsx';
+import Register from './register.jsx';
 
 function App() {
   const [user, setUser] = useState(null);
 
-  // Recuperar sesión guardada (localStorage)
+  // Recuperar sesión guardada en localStorage
   useEffect(() => {
     const savedUser = localStorage.getItem('googleUser');
     if (savedUser) {
       try {
         setUser(JSON.parse(savedUser));
       } catch (error) {
-        localStorage.removeItem('googleUser'); // Si falla, limpiar
+        localStorage.removeItem('googleUser'); // Limpia si falla
       }
     }
   }, []);
 
-  // Manejar login/logout
+  // Función para actualizar usuario y localStorage
   const handleUserChange = (userData) => {
     setUser(userData);
     if (userData) {
@@ -31,16 +34,16 @@ function App() {
 
   return (
     <Router>
+      {/* Header visible siempre */}
+      <Header user={user} onLogout={() => handleUserChange(null)} />
+
       <Routes>
-        {/* Ruta protegida: Home */}
+        {/* Ruta protegida para Home */}
         <Route
           path="/"
           element={
             user ? (
-              <Layout 
-                user={user} 
-                onLogout={() => handleUserChange(null)} // ✅ Ahora Layout tiene onLogout
-              />
+              <Layout user={user} onLogout={() => handleUserChange(null)} />
             ) : (
               <Navigate to="/login" replace />
             )
@@ -49,38 +52,35 @@ function App() {
           <Route index element={<Home user={user} />} />
         </Route>
 
-        {/* Ruta pública: Login */}
+        {/* Ruta pública para Login */}
         <Route
           path="/login"
           element={
             user ? (
               <Navigate to="/" replace />
             ) : (
-              <div style={loginContainerStyle}>
-                <h1>Inicia sesión con Google</h1>
-                <p>Para acceder a todas las funcionalidades</p>
-                <GoogleAuth onUserChange={handleUserChange} />
-              </div>
+              <Login onUserChange={handleUserChange} user={user} />
             )
           }
         />
 
-        {/* Ruta catch-all */}
+        {/* Ruta pública para Register */}
+        <Route
+          path="/register"
+          element={
+            user ? (
+              <Navigate to="/" replace />
+            ) : (
+              <Register onUserChange={handleUserChange} user={user} />
+            )
+          }
+        />
+
+        {/* Ruta catch-all: redirige según estado */}
         <Route path="*" element={<Navigate to={user ? "/" : "/login"} replace />} />
       </Routes>
     </Router>
   );
 }
-
-// Estilos del contenedor de login
-const loginContainerStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  minHeight: '100vh',
-  padding: '2rem',
-  textAlign: 'center'
-};
 
 export default App;
