@@ -6,10 +6,13 @@ function Header({ user, onLogout }) {
   return (
     <header>
       <div className="header-left">
-        <img src="/images/Logo.png" alt="Logo de InnovaSys" />
-      </div>
+        <Link to="/">
+          <img src="/images/Logo.png" alt="Logo de InnovaSys" style={{ cursor: 'pointer' }} />
+        </Link>      </div>
       <div className="header-center">
-        <h1>INNOVASYS</h1>
+        <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <h1>INNOVASYS</h1>
+        </Link>
       </div>
       <div className="header-right">
         {user ? (
