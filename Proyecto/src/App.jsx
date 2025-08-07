@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 import Header from './componentes/Header.jsx';
+import Nav from './componentes/Nav.jsx';
+import Footer from './componentes/Footer.jsx';
 import Home from './Home.jsx';
 import Login from './login.jsx';
 import Register from './register.jsx';
@@ -32,18 +34,16 @@ function App() {
   return (
     <Router>
       <Header user={user} onLogout={() => handleUserChange(null)} />
+      <Nav />
 
       <Routes>
-        {/* Página principal siempre accesible */}
         <Route path="/" element={<Home user={user} />} />
-
-        {/* Login y Registro accesibles */}
         <Route path="/login" element={<Login onUserChange={handleUserChange} />} />
         <Route path="/register" element={<Register onUserChange={handleUserChange} />} />
-
-        {/* Cualquier ruta no definida muestra Home */}
         <Route path="*" element={<Home user={user} />} />
       </Routes>
+
+      <Footer />
     </Router>
   );
 }
