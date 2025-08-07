@@ -1,0 +1,231 @@
+@import url('https://fonts.googleapis.com/css2?family=Anta&family=Concert+One&family=Fugaz+One&family=Gruppo&family=Limelight&family=Squada+One&family=Tomorrow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+/* Navegación */
+nav {
+    background-color: #0e3b7c;
+    padding: 8px;
+    text-align: center;
+    max-width: 100%;
+    border-radius: 4px;
+    z-index: 100;
+    font-family: 'Tomorrow', sans-serif;
+
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
+    font-weight: bold;
+    font-size: 0.90rem;
+    padding: 3px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+nav a:hover {
+    background-color: #1e5da3;
+}
+
+nav a.catalogo {
+    background-color: red;
+}
+
+/* ============================= */
+/* ESTILOS PARA MENÚ DESPLEGABLE MEJORADO */
+/* ============================= */
+
+/* Contenedor principal del menú */
+.nav-container {
+    position: relative;
+    display: inline-block;
+    z-index: 100;
+}
+
+/* Menú desplegable oculto por defecto */
+.dropdown-menu {
+    position: absolute;
+    top:  calc(100% + 5px);
+    background-color: white;
+    min-width: 800px;
+    max-width: 1000px;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    z-index: 99;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    border: 1px solid #e0e0e0;
+    border-top: none;
+    /* Posicionamiento inteligente */
+    left: 0;
+}
+
+/* Detectar elementos del lado derecho y posicionarlos hacia la izquierda */
+.nav-container:nth-last-child(-n+3) .dropdown-menu,
+.nav-container:last-child .dropdown-menu,
+.nav-container:nth-last-child(2) .dropdown-menu {
+    left: auto;
+    right: 0;
+}
+
+/* Para elementos específicos que sabemos están al final */
+.nav-container:has(a[href*="ELECTRODOMÉSTICOS"]) .dropdown-menu,
+.nav-container:has(a[href*="MÓVIL"]) .dropdown-menu,
+.nav-container:has(a[href*="COMPUTACIÓN"]) .dropdown-menu,
+.nav-container:has(.catalogo) .dropdown-menu {
+    left: auto;
+    right: 0;
+}
+
+/* Alternativa usando clases específicas si las anteriores no funcionan */
+.dropdown-right .dropdown-menu {
+    left: auto;
+    right: 0;
+}
+
+/* Mostrar menú al hacer hover */
+.nav-container:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+/* Contenido del menú desplegable */
+.dropdown-content {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 25px;
+}
+
+/* Columnas del menú */
+.dropdown-column {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Títulos de categorías */
+.category-title {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #e41e26;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #706e6e;
+    text-transform: uppercase;
+    text-align:left;
+}
+
+/* Enlaces dentro del menú */
+.dropdown-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.6rem;
+    padding: 2px;
+    transition: color 0.3s ease, padding-left 0.3s ease;
+    border-radius: 2px;
+    text-align: left;
+}
+
+.dropdown-link:hover {
+    color: #0e3b7c;
+    padding-left: 8px;
+    background-color: #f8f9fa;
+}
+
+/* Flecha indicadora para menús que se abren hacia la izquierda */
+.nav-container:nth-last-child(-n+3) .dropdown-menu::before,
+.nav-container:last-child .dropdown-menu::before,
+.nav-container:nth-last-child(2) .dropdown-menu::before,
+.dropdown-right .dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: 20px;
+    left: auto;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid white;
+}
+
+/* Flecha normal para menús que se abren hacia la derecha */
+.dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 20px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid white;
+}
+
+/* Prevenir que el menú se salga de la pantalla */
+@media (max-width: 1200px) {
+    .dropdown-menu {
+        min-width: 700px;
+    }
+    
+    /* Forzar apertura hacia la izquierda en pantallas más pequeñas */
+    .nav-container:nth-child(n+4) .dropdown-menu {
+        left: auto;
+        right: 0;
+    }
+}
+
+/* Responsivo */
+@media (max-width: 1024px) {
+    .dropdown-menu {
+        min-width: 600px;
+    }
+    
+    .dropdown-content {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    /* Todos los menús se abren hacia la izquierda en tablets */
+    .nav-container:nth-child(n+3) .dropdown-menu {
+        left: auto;
+        right: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .dropdown-menu {
+        min-width: 90vw;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) translateY(-10px);
+    }
+    
+    .nav-container:hover .dropdown-menu {
+        transform: translateX(-50%) translateY(0);
+    }
+    
+    .dropdown-content {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        padding: 20px;
+    }
+    
+    /* Centrar la flecha en móviles */
+    .dropdown-menu::before {
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%);
+    }
+}
+
+@media (max-width: 480px) {
+    .dropdown-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .dropdown-menu {
+        min-width: 95vw;
+    }
+}
