@@ -158,6 +158,12 @@ const Nav = () => {
     }
   ];
 
+  // Leer usuario de localStorage
+  let user = null;
+  try {
+    user = JSON.parse(localStorage.getItem('user'));
+  } catch {}
+
   return (
     <nav>
       {categories.map((category, index) => (
@@ -178,6 +184,10 @@ const Nav = () => {
         </div>
       ))}
       <Link to="/catalogo" className="catalogo">CATÁLOGO</Link>
+      {/* Solo admin puede ver Productos */}
+      {user && user.nombre_rol === 'admin' && (
+        <Link to="/productos" className="catalogo">PRODUCTOS</Link>
+      )}
     </nav>
   );
 };

@@ -13,10 +13,13 @@ function Login({ onUserChange }) {
       const res = await fetch('http://localhost:3000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ email, password })
       });
       const data = await res.json();
       if (res.ok) {
+        // Guardar usuario en localStorage para control de rol
+        localStorage.setItem('user', JSON.stringify(data));
         if (onUserChange) onUserChange(data);
         navigate('/');
       } else {

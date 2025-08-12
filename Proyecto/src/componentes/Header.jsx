@@ -24,7 +24,14 @@ function Header({ user, onLogout }) {
             />
             <div className="user-info">
               <span className="user-name">{user.name}</span>
-              <button className="logout-btn" onClick={onLogout}>Cerrar sesión</button>
+              <button
+                className="logout-btn"
+                onClick={() => {
+                  localStorage.removeItem('user');
+                  if (onLogout) onLogout();
+                  window.location.href = '/'; // recarga para forzar actualización de Nav
+                }}
+              >Cerrar sesión</button>
             </div>
           </div>
         ) : (
