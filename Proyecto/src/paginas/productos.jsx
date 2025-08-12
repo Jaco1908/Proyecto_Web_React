@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import '../assets/css/Paginas/Productos/Productos.css';
 
 const API_URL = 'http://localhost:3000/productos';
 
@@ -7,6 +8,7 @@ export default function Productos() {
   const [form, setForm] = useState({ nombre: '', descripcion: '', foto: '', precio: '' });
   const [editId, setEditId] = useState(null);
   const [error, setError] = useState('');
+  const [showForm, setShowForm] = useState(false);
 
   // Cargar productos
   useEffect(() => {
@@ -48,6 +50,7 @@ export default function Productos() {
   const handleEdit = prod => {
     setEditId(prod.id);
     setForm({ nombre: prod.nombre, descripcion: prod.descripcion, foto: prod.foto, precio: prod.precio });
+    setShowForm(true);
   };
 
   // Eliminar producto
@@ -66,20 +69,31 @@ export default function Productos() {
     }
   };
 
+  const handleShowForm = () => {
+    setShowForm(true);
+    setEditId(null);
+    setForm({ nombre: '', descripcion: '', foto: '', precio: '' });
+  };
+
   return (
-    <div style={{ maxWidth: 600, margin: 'auto' }}>
-      <h2>CRUD de Productos</h2>
-      {error && <div style={{ color: 'red' }}>{error}</div>}
-      <form onSubmit={handleSubmit} style={{ marginBottom: 20 }}>
-        <input name="nombre" placeholder="Nombre" value={form.nombre} onChange={handleChange} required /> <br />
-        <input name="descripcion" placeholder="Descripción" value={form.descripcion} onChange={handleChange} /> <br />
-        <input name="foto" placeholder="URL de la foto" value={form.foto} onChange={handleChange} /> <br />
-        <input name="precio" type="number" step="0.01" placeholder="Precio" value={form.precio} onChange={handleChange} required /> <br />
-        <button type="submit">{editId ? 'Actualizar' : 'Crear'}</button>
-        {editId && <button type="button" onClick={() => { setEditId(null); setForm({ nombre: '', descripcion: '', foto: '', precio: '' }); }}>Cancelar</button>}
-      </form>
+    <div className="productos-container">
+      <div className="productos-header">
+        <h2>Productos</h2>
+        <button className="productos-btn" onClick={handleShowForm}>Agregar producto</button>
+      </div>
+      {error && <div className="productos-error">{error}</div>}
+      {showForm && (
+        <form className="productos-form" onSubmit={handleSubmit}>
+          <input name="nombre" placeholder="Nombre" value={form.nombre} onChange={handleChange} required />
+          <input name="descripcion" placeholder="Descripción" value={form.descripcion} onChange={handleChange} />
+          <input name="foto" placeholder="URL de la foto" value={form.foto} onChange={handleChange} />
+          <input name="precio" type="number" step="0.01" placeholder="Precio" value={form.precio} onChange={handleChange} required />
+          <button className="productos-btn" type="submit">{editId ? 'Actualizar' : 'Crear'}</button>
+          <button type="button" className="productos-btn" style={{ background: '#b91c1c' }} onClick={() => { setShowForm(false); setEditId(null); setForm({ nombre: '', descripcion: '', foto: '', precio: '' }); }}>Cancelar</button>
+        </form>
+      )}
       {Array.isArray(productos) && (
-        <table border="1" cellPadding="5" style={{ width: '100%' }}>
+        <table className="productos-table">
           <thead>
             <tr>
               <th>Nombre</th>
@@ -94,11 +108,11 @@ export default function Productos() {
               <tr key={prod.id}>
                 <td>{prod.nombre}</td>
                 <td>{prod.descripcion}</td>
-                <td>{prod.foto && <img src={prod.foto} alt="foto" width={40} />}</td>
+                <td>{prod.foto && <img src={prod.foto} alt="foto" width={200} />}</td>
                 <td>${prod.precio}</td>
                 <td>
-                  <button onClick={() => handleEdit(prod)}>Editar</button>
-                  <button onClick={() => handleDelete(prod.id)}>Eliminar</button>
+                  <button className="productos-btn" onClick={() => handleEdit(prod)}>Editar</button>
+                  <button className="productos-btn" style={{ background: '#b91c1c' }} onClick={() => handleDelete(prod.id)}>Eliminar</button>
                 </td>
               </tr>
             ))}

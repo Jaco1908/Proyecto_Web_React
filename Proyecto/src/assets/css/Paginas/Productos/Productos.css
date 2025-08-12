@@ -1,0 +1,75 @@
+.productos-container {
+  max-width: 700px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 32px 24px 24px 24px;
+}
+.productos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.productos-header h2 {
+  color: #1e3a5c;
+  margin: 0;
+}
+.productos-btn {
+  background: #1e3a5c;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.productos-btn:hover {
+  background: #2a4d7c;
+}
+.productos-form {
+  background: #f5f8fa;
+  border-radius: 8px;
+  padding: 18px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 4px rgba(30,58,92,0.06);
+}
+.productos-form input {
+  margin-bottom: 10px;
+  padding: 7px 10px;
+  border: 1px solid #b0c4de;
+  border-radius: 4px;
+  width: 100%;
+  font-size: 1rem;
+}
+.productos-form button {
+  margin-right: 10px;
+}
+.productos-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+.productos-table th, .productos-table td {
+  border: 1px solid #e0e6ed;
+  padding: 8px 10px;
+  text-align: left;
+}
+.productos-table th {
+  background: #1e3a5c;
+  color: #fff;
+}
+.productos-table tr:nth-child(even) {
+  background: #f5f8fa;
+}
+.productos-table img {
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(30,58,92,0.10);
+}
+.productos-error {
+  color: #b91c1c;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
