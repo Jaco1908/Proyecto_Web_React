@@ -5,3 +5,5 @@ CREATE TABLE usuarios (
     password VARCHAR(255) NOT NULL,
     picture VARCHAR(255) DEFAULT '/images/user.png'
 );
+
+
