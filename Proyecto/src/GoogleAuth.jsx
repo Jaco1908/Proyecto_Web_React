@@ -7,15 +7,40 @@ import { jwtDecode } from 'jwt-decode';
 const GoogleAuth = ({ onUserChange }) => {
   const [user, setUser] = useState(null);
 
-  const handleSuccess = (credentialResponse) => {
+  const handleSuccess = async (credentialResponse) => {
     console.log(credentialResponse);
     const userInfo = jwtDecode(credentialResponse.credential);
     setUser(userInfo);
 
-    // ✅ Notifica al componente padre (App.jsx) que hay sesión iniciada
-    if (onUserChange) {
-      onUserChange(userInfo);
-      
+    // Enviar datos a backend para guardar/actualizar usuario
+    try {
+      const res = await fetch('http://localhost:3000/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre: userInfo.name,
+          email: userInfo.email,
+          password: userInfo.sub, // Usar sub como password única (no se usará para login manual)
+          picture: userInfo.picture
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        if (onUserChange) onUserChange(data);
+      } else if (res.status === 409) { // Usuario ya existe
+        // Intentar login para obtener datos
+        const loginRes = await fetch('http://localhost:3000/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: userInfo.email, password: userInfo.sub })
+        });
+        const loginData = await loginRes.json();
+        if (loginRes.ok && onUserChange) onUserChange(loginData);
+      } else {
+        alert(data.error || 'Error con Google Auth');
+      }
+    } catch {
+      alert('Error de conexión con el backend');
     }
   };
 

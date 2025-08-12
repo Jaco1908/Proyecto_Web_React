@@ -22,6 +22,7 @@ app.post('/api/register', async (req, res) => {
     );
     res.json(result.rows[0]);
   } catch (e) {
+    console.log('Error en /api/register:', e);
     if (e.code === '23505') return res.status(409).json({ error: 'Email ya registrado' });
     res.status(500).json({ error: 'Error en el servidor' });
   }
