@@ -1,0 +1,192 @@
+/* Usuarios CSS */
+.usuarios-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Tomorrow', sans-serif;
+}
+
+.usuarios-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.usuarios-header h2 {
+  color: #1e3a5c;
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.usuarios-btn {
+  background: linear-gradient(135deg, #1e3a5c, #2d5a9b);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  font-family: 'Tomorrow', sans-serif;
+}
+
+.usuarios-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(30, 58, 92, 0.3);
+  background: linear-gradient(135deg, #2d5a9b, #1e3a5c);
+}
+
+.usuarios-error {
+  background: #fee;
+  color: #d63384;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #f5c6cb;
+  text-align: center;
+  font-weight: 600;
+}
+
+.usuarios-form {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: end;
+}
+
+.usuarios-form input {
+  flex: 1;
+  min-width: 200px;
+  padding: 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: border-color 0.3s ease;
+  font-family: 'Tomorrow', sans-serif;
+}
+
+.usuarios-form input:focus {
+  outline: none;
+  border-color: #1e3a5c;
+  box-shadow: 0 0 0 3px rgba(30, 58, 92, 0.1);
+}
+
+.usuarios-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.usuarios-table th {
+  background: linear-gradient(135deg, #1e3a5c, #2d5a9b);
+  color: white;
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.usuarios-table td {
+  padding: 15px;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: middle;
+}
+
+.usuarios-table tr:hover {
+  background: #f8f9fa;
+}
+
+.rol-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.rol-badge.admin {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+}
+
+.rol-badge.user {
+  background: linear-gradient(135deg, #6c757d, #495057);
+  color: white;
+}
+
+.role-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.role-btn {
+  padding: 6px 12px;
+  border: 2px solid #e9ecef;
+  background: white;
+  color: #6c757d;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-family: 'Tomorrow', sans-serif;
+}
+
+.role-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.role-btn.active {
+  background: linear-gradient(135deg, #1e3a5c, #2d5a9b);
+  color: white;
+  border-color: #1e3a5c;
+}
+
+.role-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .usuarios-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .usuarios-form {
+    flex-direction: column;
+  }
+  
+  .usuarios-form input {
+    min-width: unset;
+  }
+  
+  .usuarios-table {
+    font-size: 0.8rem;
+  }
+  
+  .usuarios-table th,
+  .usuarios-table td {
+    padding: 10px 8px;
+  }
+  
+  .role-buttons {
+    flex-direction: column;
+  }
+}
