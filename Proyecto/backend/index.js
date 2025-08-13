@@ -33,8 +33,8 @@ app.post('/api/register', async (req, res) => {
   try {
     const hashed = await bcrypt.hash(password, 10);
     const result = await query(
-      'INSERT INTO usuarios (nombre, email, password, picture) VALUES ($1, $2, $3, $4) RETURNING id, nombre, email, picture',
-      [nombre, email, hashed, picture || '/images/user.png']
+      'INSERT INTO usuarios (nombre, email, password, picture, role_id) VALUES ($1, $2, $3, $4, $5) RETURNING id, nombre, email, picture',
+      [nombre, email, hashed, picture || '/images/user.png', 2] // rol 2 = usuario normal
     );
     res.json(result.rows[0]);
   } catch (e) {
@@ -98,6 +98,43 @@ app.put('/productos/:id', requireLogin, requireAdmin, async (req, res) => {
 app.delete('/productos/:id', requireLogin, requireAdmin, async (req, res) => {
   await query('DELETE FROM productos WHERE id=$1', [req.params.id]);
   res.json({ mensaje: 'Producto eliminado' });
+});
+
+// Gestión de usuarios (solo admin)
+app.get('/usuarios', requireLogin, requireAdmin, async (req, res) => {
+  const result = await query(`
+    SELECT u.id, u.nombre, u.email, u.picture, u.role_id, r.nombre as nombre_rol
+    FROM usuarios u
+    JOIN roles r ON u.role_id = r.id
+    ORDER BY u.id
+  `);
+  res.json(result.rows);
+});
+
+app.put('/usuarios/:id/rol', requireLogin, requireAdmin, async (req, res) => {
+  const { role_id } = req.body;
+  if (!role_id || (role_id !== 1 && role_id !== 2)) {
+    return res.status(400).json({ error: 'role_id debe ser 1 (admin) o 2 (user)' });
+  }
+  await query('UPDATE usuarios SET role_id=$1 WHERE id=$2', [role_id, req.params.id]);
+  res.json({ mensaje: 'Rol actualizado' });
+});
+
+app.post('/usuarios/admin', requireLogin, requireAdmin, async (req, res) => {
+  const { nombre, email, password, picture } = req.body;
+  if (!nombre || !email || !password) return res.status(400).json({ error: 'Faltan datos' });
+  try {
+    const hashed = await bcrypt.hash(password, 10);
+    const result = await query(
+      'INSERT INTO usuarios (nombre, email, password, picture, role_id) VALUES ($1, $2, $3, $4, $5) RETURNING id, nombre, email, picture',
+      [nombre, email, hashed, picture || '/images/user.png', 1] // rol 1 = admin
+    );
+    res.json(result.rows[0]);
+  } catch (e) {
+    console.log('Error en /usuarios/admin:', e);
+    if (e.code === '23505') return res.status(409).json({ error: 'Email ya registrado' });
+    res.status(500).json({ error: 'Error en el servidor' });
+  }
 });
 
 const PORT = process.env.PORT || 4000;

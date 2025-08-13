@@ -9,6 +9,7 @@ import Home from './Home.jsx';
 import Login from './login.jsx';
 import Register from './register.jsx';
 import Productos from './paginas/productos.jsx';
+import Usuarios from './paginas/usuarios.jsx';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -44,6 +45,7 @@ function App() {
         <Route path="/login" element={<Login onUserChange={handleUserChange} />} />
         <Route path="/register" element={<Register onUserChange={handleUserChange} />} />
         <Route path="/productos" element={<Productos />} />
+        <Route path="/usuarios" element={<Usuarios />} />
         <Route path="*" element={<Home user={user} />} />
       </Routes>
 
