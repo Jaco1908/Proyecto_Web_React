@@ -23,7 +23,8 @@ function Header({ user, onLogout }) {
               className="user-avatar"
             />
             <div className="user-info">
-              <span className="user-name">{user.name}</span>
+              <span className="user-name">{user.nombre}</span>
+              <span className="user-role">Rol: {user.nombre_rol}</span>
               <button
                 className="logout-btn"
                 onClick={() => {

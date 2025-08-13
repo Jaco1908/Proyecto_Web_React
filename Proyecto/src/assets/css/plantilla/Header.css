@@ -170,6 +170,17 @@ header h1:hover::after {
     font-family: 'Tomorrow', sans-serif;
 }
 
+.user-role {
+    font-weight: 400;
+    font-size: 0.75rem;
+    color: #6c757d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: 'Tomorrow', sans-serif;
+    text-transform: capitalize;
+}
+
 .logout-btn {
     margin-top: 4px;
     padding: 5px 12px;

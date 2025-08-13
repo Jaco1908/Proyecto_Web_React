@@ -184,8 +184,8 @@ const Nav = () => {
         </div>
       ))}
       <Link to="/catalogo" className="catalogo">CATÁLOGO</Link>
-  {/* Todos pueden ver Productos */}
-  <Link to="/productos" className="catalogo">PRODUCTOS</Link>
+      {/* Solo usuarios autenticados pueden ver Productos */}
+      {user && <Link to="/productos" className="catalogo">PRODUCTOS</Link>}
     </nav>
   );
 };
