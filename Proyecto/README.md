@@ -1,3 +1,20 @@
+## Despliegue en producción
+
+1. Genera la build del frontend:
+	```bash
+	npm run build
+	```
+	Esto creará una carpeta `dist/` con los archivos estáticos.
+
+2. Puedes servir la carpeta `dist/` con cualquier servidor estático (por ejemplo, Nginx, Apache o el propio backend si lo adaptas).
+
+3. Asegúrate de configurar las variables de entorno de producción en el backend (`.env`).
+
+4. Si usas un dominio, actualiza la configuración de CORS en `backend/index.js` para permitir tu dominio en vez de `localhost`.
+
+5. Para bases de datos en la nube, actualiza los datos de conexión en `.env`.
+
+---
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

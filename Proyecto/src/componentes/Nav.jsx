@@ -184,10 +184,8 @@ const Nav = () => {
         </div>
       ))}
       <Link to="/catalogo" className="catalogo">CATÁLOGO</Link>
-      {/* Solo admin puede ver Productos */}
-      {user && user.nombre_rol === 'admin' && (
-        <Link to="/productos" className="catalogo">PRODUCTOS</Link>
-      )}
+  {/* Todos pueden ver Productos */}
+  <Link to="/productos" className="catalogo">PRODUCTOS</Link>
     </nav>
   );
 };

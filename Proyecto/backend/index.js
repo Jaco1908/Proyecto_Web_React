@@ -74,8 +74,8 @@ app.post('/logout', (req, res) => {
   res.json({ mensaje: 'Sesión cerrada' });
 });
 
-// CRUD de productos (solo admin)
-app.get('/productos', requireLogin, requireAdmin, async (req, res) => {
+// Ver productos (usuarios autenticados)
+app.get('/productos', requireLogin, async (req, res) => {
   const result = await query('SELECT * FROM productos');
   res.json(result.rows);
 });
