@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './assets/css/auth.css';
+import GoogleAuth from './componentes/GoogleAuthBD.jsx';
 
 function Login({ onUserChange }) {
   const [email, setEmail] = useState('');
@@ -20,6 +21,7 @@ function Login({ onUserChange }) {
       if (res.ok) {
         // Guardar usuario en localStorage para control de rol
         localStorage.setItem('user', JSON.stringify(data));
+        localStorage.setItem('googleUser', JSON.stringify(data)); // Compatibilidad
         if (onUserChange) onUserChange(data);
         navigate('/');
       } else {
@@ -49,7 +51,30 @@ function Login({ onUserChange }) {
           required
         />
         <button type="submit">Entrar</button>
-        <p>¿No tienes cuenta? <a href="/register">Regístrate</a></p>
+        
+        {/* Separador */}
+        <div style={{ 
+          margin: '20px 0', 
+          textAlign: 'center', 
+          position: 'relative',
+          color: '#666'
+        }}>
+          <hr style={{ border: 'none', borderTop: '1px solid #ddd' }} />
+          <span style={{ 
+            position: 'absolute',
+            top: '-12px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            backgroundColor: 'white',
+            padding: '0 10px'
+          }}>
+            O
+          </span>
+        </div>
+
+        <GoogleAuth onUserChange={onUserChange} />
+
+        <p>¿No tienes cuenta? <Link to="/register">Regístrate</Link></p>
       </form>
     </div>
   );

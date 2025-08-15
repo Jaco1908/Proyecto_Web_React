@@ -80,18 +80,19 @@ app.get('/productos', requireLogin, async (req, res) => {
   res.json(result.rows);
 });
 app.post('/productos', requireLogin, requireAdmin, async (req, res) => {
-  const { nombre, descripcion, foto, precio } = req.body;
+  const { nombre, descripcion, foto, precio, categoria_id, subcategoria_id, marca_id } = req.body;
   await query(
-    'INSERT INTO productos (nombre, descripcion, foto, precio) VALUES ($1, $2, $3, $4)',
-    [nombre, descripcion, foto, precio]
+    `INSERT INTO productos (nombre, descripcion, foto, precio, categoria_id, subcategoria_id, marca_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+    [nombre, descripcion, foto, precio, categoria_id, subcategoria_id, marca_id]
   );
   res.json({ mensaje: 'Producto creado' });
 });
 app.put('/productos/:id', requireLogin, requireAdmin, async (req, res) => {
-  const { nombre, descripcion, foto, precio } = req.body;
+  const { nombre, descripcion, foto, precio, categoria_id, subcategoria_id, marca_id } = req.body;
   await query(
-    'UPDATE productos SET nombre=$1, descripcion=$2, foto=$3, precio=$4 WHERE id=$5',
-    [nombre, descripcion, foto, precio, req.params.id]
+    `UPDATE productos SET nombre=$1, descripcion=$2, foto=$3, precio=$4, categoria_id=$5, subcategoria_id=$6, marca_id=$7 WHERE id=$8`,
+    [nombre, descripcion, foto, precio, categoria_id, subcategoria_id, marca_id, req.params.id]
   );
   res.json({ mensaje: 'Producto actualizado' });
 });
@@ -139,3 +140,128 @@ app.post('/usuarios/admin', requireLogin, requireAdmin, async (req, res) => {
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Servidor backend en puerto ${PORT}`));
+
+
+// ENDPOINTS PARA CATEGORÍAS, SUBCATEGORÍAS Y MARCAS
+
+// CRUD CATEGORÍAS
+app.get('/categorias', requireLogin, requireAdmin, async (req, res) => {
+  const result = await query('SELECT * FROM categorias ORDER BY nombre');
+  res.json(result.rows);
+});
+app.post('/categorias', requireLogin, requireAdmin, async (req, res) => {
+  const { nombre, descripcion } = req.body;
+  if (!nombre) return res.status(400).json({ error: 'El nombre es obligatorio' });
+  try {
+    await query('INSERT INTO categorias (nombre, descripcion) VALUES ($1, $2)', [nombre, descripcion || null]);
+    res.json({ mensaje: 'Categoría creada' });
+  } catch (e) {
+    if (e.code === '23505') return res.status(409).json({ error: 'Ya existe una categoría con ese nombre' });
+    res.status(500).json({ error: 'Error al crear categoría' });
+  }
+});
+app.put('/categorias/:id', requireLogin, requireAdmin, async (req, res) => {
+  const { nombre, descripcion } = req.body;
+  if (!nombre) return res.status(400).json({ error: 'El nombre es obligatorio' });
+  try {
+    await query('UPDATE categorias SET nombre=$1, descripcion=$2 WHERE id=$3', [nombre, descripcion || null, req.params.id]);
+    res.json({ mensaje: 'Categoría actualizada' });
+  } catch (e) {
+    if (e.code === '23505') return res.status(409).json({ error: 'Ya existe una categoría con ese nombre' });
+    res.status(500).json({ error: 'Error al actualizar categoría' });
+  }
+});
+app.delete('/categorias/:id', requireLogin, requireAdmin, async (req, res) => {
+  // Verificar subcategorías asociadas
+  const subcats = await query('SELECT id FROM subcategorias WHERE categoria_id=$1', [req.params.id]);
+  if (subcats.rows.length > 0) {
+    // Eliminar subcategorías asociadas
+    await query('DELETE FROM subcategorias WHERE categoria_id=$1', [req.params.id]);
+  }
+  await query('DELETE FROM categorias WHERE id=$1', [req.params.id]);
+  res.json({ mensaje: `Categoría y ${subcats.rows.length} subcategorías eliminadas` });
+});
+
+
+// CRUD SUBCATEGORÍAS
+app.get('/subcategorias', requireLogin, requireAdmin, async (req, res) => {
+  const { categoria_id } = req.query;
+  let sql = 'SELECT * FROM subcategorias';
+  let params = [];
+  if (categoria_id) {
+    sql += ' WHERE categoria_id = $1';
+    params = [categoria_id];
+  }
+  sql += ' ORDER BY nombre';
+  const result = await query(sql, params);
+  res.json(result.rows);
+});
+app.post('/subcategorias', requireLogin, requireAdmin, async (req, res) => {
+  const { nombre, descripcion, categoria_id } = req.body;
+  if (!nombre || !categoria_id) return res.status(400).json({ error: 'Nombre y categoría son obligatorios' });
+  try {
+    await query('INSERT INTO subcategorias (nombre, descripcion, categoria_id) VALUES ($1, $2, $3)', [nombre, descripcion || null, categoria_id]);
+    res.json({ mensaje: 'Subcategoría creada' });
+  } catch (e) {
+    res.status(500).json({ error: 'Error al crear subcategoría' });
+  }
+});
+app.put('/subcategorias/:id', requireLogin, requireAdmin, async (req, res) => {
+  const { nombre, descripcion, categoria_id } = req.body;
+  if (!nombre || !categoria_id) return res.status(400).json({ error: 'Nombre y categoría son obligatorios' });
+  try {
+    await query('UPDATE subcategorias SET nombre=$1, descripcion=$2, categoria_id=$3 WHERE id=$4', [nombre, descripcion || null, categoria_id, req.params.id]);
+    res.json({ mensaje: 'Subcategoría actualizada' });
+  } catch (e) {
+    res.status(500).json({ error: 'Error al actualizar subcategoría' });
+  }
+});
+app.delete('/subcategorias/:id', requireLogin, requireAdmin, async (req, res) => {
+  // Verificar productos asociados
+  const prods = await query('SELECT id FROM productos WHERE subcategoria_id=$1', [req.params.id]);
+  if (prods.rows.length > 0) {
+    // Quitar subcategoria_id de productos asociados
+    await query('UPDATE productos SET subcategoria_id=NULL WHERE subcategoria_id=$1', [req.params.id]);
+  }
+  await query('DELETE FROM subcategorias WHERE id=$1', [req.params.id]);
+  res.json({ mensaje: `Subcategoría eliminada. ${prods.rows.length} productos quedaron sin subcategoría.` });
+});
+
+
+// CRUD MARCAS
+app.get('/marcas', requireLogin, requireAdmin, async (req, res) => {
+  const result = await query('SELECT * FROM marcas ORDER BY nombre');
+  res.json(result.rows);
+});
+app.post('/marcas', requireLogin, requireAdmin, async (req, res) => {
+  const { nombre, logo } = req.body;
+  if (!nombre) return res.status(400).json({ error: 'El nombre es obligatorio' });
+  try {
+    await query('INSERT INTO marcas (nombre, logo) VALUES ($1, $2)', [nombre, logo || null]);
+    res.json({ mensaje: 'Marca creada' });
+  } catch (e) {
+    if (e.code === '23505') return res.status(409).json({ error: 'Ya existe una marca con ese nombre' });
+    res.status(500).json({ error: 'Error al crear marca' });
+  }
+});
+app.put('/marcas/:id', requireLogin, requireAdmin, async (req, res) => {
+  const { nombre, logo } = req.body;
+  if (!nombre) return res.status(400).json({ error: 'El nombre es obligatorio' });
+  try {
+    await query('UPDATE marcas SET nombre=$1, logo=$2 WHERE id=$3', [nombre, logo || null, req.params.id]);
+    res.json({ mensaje: 'Marca actualizada' });
+  } catch (e) {
+    if (e.code === '23505') return res.status(409).json({ error: 'Ya existe una marca con ese nombre' });
+    res.status(500).json({ error: 'Error al actualizar marca' });
+  }
+});
+app.delete('/marcas/:id', requireLogin, requireAdmin, async (req, res) => {
+  // Verificar productos asociados
+  const prods = await query('SELECT id FROM productos WHERE marca_id=$1', [req.params.id]);
+  if (prods.rows.length > 0) {
+    // Quitar marca_id de productos asociados
+    await query('UPDATE productos SET marca_id=NULL WHERE marca_id=$1', [req.params.id]);
+  }
+  await query('DELETE FROM marcas WHERE id=$1', [req.params.id]);
+  res.json({ mensaje: `Marca eliminada. ${prods.rows.length} productos quedaron sin marca.` });
+});

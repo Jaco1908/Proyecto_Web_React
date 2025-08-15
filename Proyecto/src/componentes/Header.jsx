@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'; // Asegúrate de importar Link si lo usas
 import '../assets/css/plantilla/header.css';
+import CartIcon from './CartIcon.jsx';
 
 
 function Header({ user, onLogout }) {
@@ -15,6 +16,9 @@ function Header({ user, onLogout }) {
         </Link>
       </div>
       <div className="header-right">
+        {/* Ícono del carrito - siempre visible */}
+        <CartIcon />
+        
         {user ? (
           <div className="user-profile">
             <img

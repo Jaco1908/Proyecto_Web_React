@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import GoogleAuth from './GoogleAuth.jsx'; // Ajusta ruta si es necesario
+import GoogleAuth from './componentes/GoogleAuthBD.jsx';
 import './assets/css/auth.css';
 
 function Register({ onUserChange }) {

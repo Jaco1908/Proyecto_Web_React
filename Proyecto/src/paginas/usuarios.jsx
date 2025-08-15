@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { fetchWithAuth } from '../utils/fetchWithAuth';
+import '../assets/css/SesionExpirada.css';
 import '../assets/css/Paginas/Usuarios/Usuarios.css';
 
 const API_URL = 'http://localhost:3000/usuarios';
@@ -28,7 +30,7 @@ export default function Usuarios() {
 
   // Cargar usuarios
   useEffect(() => {
-    fetch(API_URL, { credentials: 'include' })
+    fetchWithAuth(API_URL)
       .then(r => r.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -51,10 +53,9 @@ export default function Usuarios() {
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch(`${API_URL}/admin`, {
+      const res = await fetchWithAuth(`${API_URL}/admin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify(form)
       });
       if (!res.ok) {
@@ -71,10 +72,9 @@ export default function Usuarios() {
   const handleRoleChange = async (userId, newRoleId) => {
     setError('');
     try {
-      const res = await fetch(`${API_URL}/${userId}/rol`, {
+      const res = await fetchWithAuth(`${API_URL}/${userId}/rol`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ role_id: newRoleId })
       });
       if (!res.ok) throw new Error('Error al cambiar rol');

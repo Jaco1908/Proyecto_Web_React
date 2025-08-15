@@ -1,15 +1,32 @@
 import { GoogleOAuthProvider, GoogleLogin, googleLogout } from '@react-oauth/google';
 import { Button, Typography, Box, Avatar } from '@mui/material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 
 // ✅ Corrige la firma del componente para recibir props como objeto
 const GoogleAuth = ({ onUserChange }) => {
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  // Verificar si ya hay un usuario logueado
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user') || localStorage.getItem('googleUser');
+    if (savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch {
+        localStorage.removeItem('user');
+        localStorage.removeItem('googleUser');
+      }
+    }
+  }, []);
 
   const handleSuccess = async (credentialResponse) => {
-    console.log(credentialResponse);
+    console.log('Google login success:', credentialResponse);
     const userInfo = jwtDecode(credentialResponse.credential);
+    console.log('User info:', userInfo);
+    
     setUser(userInfo);
 
     // Enviar datos a backend para guardar/actualizar usuario
@@ -25,21 +42,44 @@ const GoogleAuth = ({ onUserChange }) => {
         })
       });
       const data = await res.json();
+      
       if (res.ok) {
+        // Usuario registrado exitosamente
+        console.log('User registered:', data);
+        // Guardar en ambos lugares para compatibilidad
+        localStorage.setItem('user', JSON.stringify(data));
+        localStorage.setItem('googleUser', JSON.stringify(data));
         if (onUserChange) onUserChange(data);
-      } else if (res.status === 409) { // Usuario ya existe
-        // Intentar login para obtener datos
+        // Redirigir al home
+        navigate('/');
+      } else if (res.status === 409) { 
+        // Usuario ya existe, intentar login
+        console.log('User exists, trying login...');
         const loginRes = await fetch('http://localhost:3000/api/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: userInfo.email, password: userInfo.sub })
         });
         const loginData = await loginRes.json();
-        if (loginRes.ok && onUserChange) onUserChange(loginData);
+        
+        if (loginRes.ok) {
+          console.log('User logged in:', loginData);
+          // Guardar en ambos lugares para compatibilidad
+          localStorage.setItem('user', JSON.stringify(loginData));
+          localStorage.setItem('googleUser', JSON.stringify(loginData));
+          if (onUserChange) onUserChange(loginData);
+          // Redirigir al home
+          navigate('/');
+        } else {
+          console.error('Login error:', loginData);
+          alert('Error al iniciar sesión con Google');
+        }
       } else {
+        console.error('Registration error:', data);
         alert(data.error || 'Error con Google Auth');
       }
-    } catch {
+    } catch (error) {
+      console.error('Network error:', error);
       alert('Error de conexión con el backend');
     }
   };

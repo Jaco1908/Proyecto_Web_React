@@ -7,9 +7,9 @@ nav {
     text-align: center;
     max-width: 100%;
     border-radius: 4px;
-    z-index: 100;
+    z-index: 1000;
+    position: relative;
     font-family: 'Tomorrow', sans-serif;
-
 }
 
 nav a {
@@ -39,7 +39,7 @@ nav a.catalogo {
 .nav-container {
     position: relative;
     display: inline-block;
-    z-index: 100;
+    z-index: 1000;
 }
 
 /* Menú desplegable oculto por defecto */
@@ -51,7 +51,7 @@ nav a.catalogo {
     max-width: 1000px;
     border-radius: 0 0 12px 12px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    z-index: 99;
+    z-index: 999;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);

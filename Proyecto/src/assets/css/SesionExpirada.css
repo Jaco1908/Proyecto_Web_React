@@ -1,0 +1,66 @@
+/* Estilos para el mensaje de sesión expirada */
+.session-expired-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(30, 41, 59, 0.7);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.session-expired-content {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 32px #0002;
+  padding: 32px 40px;
+  text-align: center;
+  max-width: 90vw;
+  min-width: 320px;
+}
+.session-expired-content h2 {
+  color: #1e3a8a;
+  margin-bottom: 12px;
+}
+.session-expired-content p {
+  color: #334155;
+  margin-bottom: 24px;
+}
+.session-expired-content button {
+  background: #1e3a8a;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 28px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.session-expired-content button:hover {
+  background: #2563eb;
+}
+
+/* Tabla productos: que no haga scroll lateral y se vea completa */
+.productos-table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+}
+.productos-table th, .productos-table td {
+  border: 1px solid #e5e7eb;
+  padding: 10px 12px;
+  text-align: left;
+}
+.productos-table th {
+  background: #1e3a8a;
+  color: #fff;
+}
+.productos-table tr:nth-child(even) {
+  background: #f1f5f9;
+}
+@media (max-width: 900px) {
+  .productos-table {
+    min-width: 600px;
+    font-size: 0.95rem;
+  }
+}
