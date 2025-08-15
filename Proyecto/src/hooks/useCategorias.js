@@ -10,7 +10,7 @@ export const useCategorias = () => {
     const fetchCategorias = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:3000/categorias/public');
+        const response = await fetch('/api/categorias/public');
         
         if (!response.ok) {
           throw new Error('Error al cargar categorías');
@@ -58,7 +58,7 @@ export const useSubcategorias = (categoriaId) => {
 
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:3000/subcategorias/public?categoria_id=${categoriaId}`);
+        const response = await fetch(`/api/subcategorias/public?categoria_id=${categoriaId}`);
         
         if (!response.ok) {
           throw new Error('Error al cargar subcategorías');

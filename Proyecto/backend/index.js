@@ -416,5 +416,102 @@ app.delete('/marcas/:id', requireLogin, requireAdmin, async (req, res) => {
   res.json({ mensaje: `Marca eliminada. ${prods.rows.length} productos quedaron sin marca.` });
 });
 
+// ENDPOINTS CON PREFIJO /api PARA COMPATIBILIDAD CON FRONTEND
+app.get('/api/productos', async (req, res) => {
+  try {
+    const { categoria, marca, subcategoria, precio } = req.query;
+    let sql = 'SELECT * FROM productos WHERE 1=1';
+    let params = [];
+    let paramCount = 0;
+
+    if (categoria) {
+      paramCount++;
+      sql += ` AND categoria_id = $${paramCount}`;
+      params.push(categoria);
+    }
+    if (marca) {
+      paramCount++;
+      sql += ` AND marca_id = $${paramCount}`;
+      params.push(marca);
+    }
+    if (subcategoria) {
+      paramCount++;
+      sql += ` AND subcategoria_id = $${paramCount}`;
+      params.push(subcategoria);
+    }
+    if (precio) {
+      const [min, max] = precio.split('-').map(Number);
+      if (!isNaN(min) && !isNaN(max)) {
+        paramCount++;
+        sql += ` AND precio BETWEEN $${paramCount} AND $${paramCount + 1}`;
+        params.push(min, max);
+      }
+    }
+
+    sql += ' ORDER BY nombre';
+    const result = await query(sql, params);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error al obtener productos:', error);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+app.post('/api/productos', requireLogin, requireAdmin, async (req, res) => {
+  const { nombre, descripcion, foto, precio, categoria_id, subcategoria_id, marca_id } = req.body;
+  try {
+    await query(
+      'INSERT INTO productos (nombre, descripcion, foto, precio, categoria_id, subcategoria_id, marca_id) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+      [nombre, descripcion, foto, precio, categoria_id, subcategoria_id, marca_id]
+    );
+    res.json({ mensaje: 'Producto creado' });
+  } catch (error) {
+    console.error('Error al crear producto:', error);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+app.put('/api/productos/:id', requireLogin, requireAdmin, async (req, res) => {
+  const { nombre, descripcion, foto, precio, categoria_id, subcategoria_id, marca_id } = req.body;
+  try {
+    await query(
+      `UPDATE productos SET nombre=$1, descripcion=$2, foto=$3, precio=$4, categoria_id=$5, subcategoria_id=$6, marca_id=$7 WHERE id=$8`,
+      [nombre, descripcion, foto, precio, categoria_id, subcategoria_id, marca_id, req.params.id]
+    );
+    res.json({ mensaje: 'Producto actualizado' });
+  } catch (error) {
+    console.error('Error al actualizar producto:', error);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+app.delete('/api/productos/:id', requireLogin, requireAdmin, async (req, res) => {
+  try {
+    await query('DELETE FROM productos WHERE id=$1', [req.params.id]);
+    res.json({ mensaje: 'Producto eliminado' });
+  } catch (error) {
+    console.error('Error al eliminar producto:', error);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+app.get('/api/subcategorias', requireLogin, requireAdmin, async (req, res) => {
+  try {
+    const { categoria_id } = req.query;
+    let sql = 'SELECT * FROM subcategorias';
+    let params = [];
+    if (categoria_id) {
+      sql += ' WHERE categoria_id = $1';
+      params = [categoria_id];
+    }
+    sql += ' ORDER BY nombre';
+    const result = await query(sql, params);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error al obtener subcategorías:', error);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
 // Iniciar el servidor
 app.listen(PORT, () => console.log(`Servidor backend en puerto ${PORT}`));

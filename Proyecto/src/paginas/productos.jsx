@@ -4,7 +4,7 @@ import { useProductNotification } from '../context/ProductNotificationContext';
 import '../assets/css/Paginas/Productos/Productos.css';
 import '../assets/css/SesionExpirada.css';
 
-const API_URL = 'http://localhost:3000/productos';
+const API_URL = '/api/productos';
 
 export default function AdministrarProductos() {
   const { addProductNotification } = useProductNotification();
@@ -58,9 +58,9 @@ export default function AdministrarProductos() {
     };
 
     Promise.all([
-      fetchWithAuth(API_URL).then(r => r.json()),
-      fetchWithAuth('http://localhost:3000/categorias').then(r => r.json()),
-      fetchWithAuth('http://localhost:3000/marcas').then(r => r.json())
+  fetchWithAuth(API_URL).then(r => r.json()),
+    fetchWithAuth('/api/categorias/public').then(r => r.json()),
+    fetchWithAuth('/api/marcas/public').then(r => r.json())
     ])
     .then(([productosData, categoriasData, marcasData]) => {
       // Procesar productos
@@ -109,7 +109,7 @@ export default function AdministrarProductos() {
   // Cargar subcategorías cuando cambia la categoría seleccionada
   useEffect(() => {
     if (form.categoria_id) {
-      fetchWithAuth(`http://localhost:3000/subcategorias?categoria_id=${form.categoria_id}`)
+  fetchWithAuth(`/api/subcategorias?categoria_id=${form.categoria_id}`)
         .then(r => r.json())
         .then(data => {
           if (Array.isArray(data)) {
