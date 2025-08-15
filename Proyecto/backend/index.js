@@ -74,19 +74,74 @@ app.post('/logout', (req, res) => {
   res.json({ mensaje: 'Sesión cerrada' });
 });
 
-// Ver productos (usuarios autenticados)
+// Ver productos (usuarios autenticados) con información completa
 app.get('/productos', requireLogin, async (req, res) => {
-  const result = await query('SELECT * FROM productos');
-  res.json(result.rows);
+  try {
+    const result = await query(`
+      SELECT 
+        p.*,
+        c.nombre as categoria_nombre,
+        s.nombre as subcategoria_nombre,
+        m.nombre as marca_nombre
+      FROM productos p
+      LEFT JOIN categorias c ON p.categoria_id = c.id
+      LEFT JOIN subcategorias s ON p.subcategoria_id = s.id  
+      LEFT JOIN marcas m ON p.marca_id = m.id
+      ORDER BY p.id DESC
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error al obtener productos:', error);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
 });
+
 app.post('/productos', requireLogin, requireAdmin, async (req, res) => {
   const { nombre, descripcion, foto, precio, categoria_id, subcategoria_id, marca_id } = req.body;
-  await query(
-    `INSERT INTO productos (nombre, descripcion, foto, precio, categoria_id, subcategoria_id, marca_id)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-    [nombre, descripcion, foto, precio, categoria_id, subcategoria_id, marca_id]
-  );
-  res.json({ mensaje: 'Producto creado' });
+  console.log('🚀 Creando producto:', {
+    nombre,
+    descripcion: descripcion?.substring(0, 50) + '...',
+    foto: foto?.substring(0, 50) + '...',
+    precio,
+    categoria_id,
+    subcategoria_id,
+    marca_id
+  });
+  
+  try {
+    const result = await query(
+      `INSERT INTO productos (nombre, descripcion, foto, precio, categoria_id, subcategoria_id, marca_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+      [nombre, descripcion, foto, precio, categoria_id, subcategoria_id, marca_id]
+    );
+    
+    console.log('✅ Producto creado con ID:', result.rows[0].id);
+    
+    // Obtener información completa del producto para la notificación
+    const productWithInfo = await query(`
+      SELECT 
+        p.*,
+        c.nombre as categoria_nombre,
+        s.nombre as subcategoria_nombre,
+        m.nombre as marca_nombre
+      FROM productos p
+      LEFT JOIN categorias c ON p.categoria_id = c.id
+      LEFT JOIN subcategorias s ON p.subcategoria_id = s.id  
+      LEFT JOIN marcas m ON p.marca_id = m.id
+      WHERE p.id = $1
+    `, [result.rows[0].id]);
+    
+    console.log('📋 Información completa del producto:', productWithInfo.rows[0]);
+    
+    res.json({ 
+      mensaje: 'Producto creado',
+      id: result.rows[0].id,
+      product: productWithInfo.rows[0] // Enviamos la información completa
+    });
+  } catch (error) {
+    console.error('❌ Error al crear producto:', error);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
 });
 app.put('/productos/:id', requireLogin, requireAdmin, async (req, res) => {
   const { nombre, descripcion, foto, precio, categoria_id, subcategoria_id, marca_id } = req.body;
@@ -138,16 +193,32 @@ app.post('/usuarios/admin', requireLogin, requireAdmin, async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor backend en puerto ${PORT}`));
 
 
 // ENDPOINTS PARA CATEGORÍAS, SUBCATEGORÍAS Y MARCAS
 
-// CRUD CATEGORÍAS
+// Endpoint público para categorías (para el navbar)
+app.get('/categorias/public', async (req, res) => {
+  try {
+    const result = await query('SELECT * FROM categorias ORDER BY nombre');
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error al obtener categorías públicas:', error);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// CRUD CATEGORÍAS (requiere admin)
 app.get('/categorias', requireLogin, requireAdmin, async (req, res) => {
-  const result = await query('SELECT * FROM categorias ORDER BY nombre');
-  res.json(result.rows);
+  try {
+    const result = await query('SELECT * FROM categorias ORDER BY nombre');
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error al obtener categorías:', error);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
 });
 app.post('/categorias', requireLogin, requireAdmin, async (req, res) => {
   const { nombre, descripcion } = req.body;
@@ -183,18 +254,42 @@ app.delete('/categorias/:id', requireLogin, requireAdmin, async (req, res) => {
 });
 
 
-// CRUD SUBCATEGORÍAS
-app.get('/subcategorias', requireLogin, requireAdmin, async (req, res) => {
-  const { categoria_id } = req.query;
-  let sql = 'SELECT * FROM subcategorias';
-  let params = [];
-  if (categoria_id) {
-    sql += ' WHERE categoria_id = $1';
-    params = [categoria_id];
+// Endpoint público para subcategorías (para el navbar y notificaciones)
+app.get('/subcategorias/public', async (req, res) => {
+  try {
+    const { categoria_id } = req.query;
+    let sql = 'SELECT * FROM subcategorias';
+    let params = [];
+    if (categoria_id) {
+      sql += ' WHERE categoria_id = $1';
+      params = [categoria_id];
+    }
+    sql += ' ORDER BY nombre';
+    const result = await query(sql, params);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error al obtener subcategorías públicas:', error);
+    res.status(500).json({ error: 'Error del servidor' });
   }
-  sql += ' ORDER BY nombre';
-  const result = await query(sql, params);
-  res.json(result.rows);
+});
+
+// CRUD SUBCATEGORÍAS (requiere admin)
+app.get('/subcategorias', requireLogin, requireAdmin, async (req, res) => {
+  try {
+    const { categoria_id } = req.query;
+    let sql = 'SELECT * FROM subcategorias';
+    let params = [];
+    if (categoria_id) {
+      sql += ' WHERE categoria_id = $1';
+      params = [categoria_id];
+    }
+    sql += ' ORDER BY nombre';
+    const result = await query(sql, params);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error al obtener subcategorías:', error);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
 });
 app.post('/subcategorias', requireLogin, requireAdmin, async (req, res) => {
   const { nombre, descripcion, categoria_id } = req.body;

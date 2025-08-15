@@ -1,10 +1,17 @@
 import React, { useState, useMemo } from 'react';
+import { useProductNotification } from '../context/ProductNotificationContext';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import '../assets/css/Accesorios.css';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../componentes/ToastNotification';
 
 const Accesorios = () => {
+  const { newProducts } = useProductNotification();
+  // Filtrar productos nuevos de accesorios
+  const nuevosAccesorios = newProducts.filter(p => {
+    if (!p.categoria_nombre) return false;
+    return p.categoria_nombre.toLowerCase().includes('accesorio');
+  });
   const { categoria } = useParams();
   const navigate = useNavigate();
   const { addToCart, isInCart, getItemQuantity } = useCart();
@@ -119,6 +126,25 @@ const Accesorios = () => {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
+      {/* Apartado de nuevos productos agregados en accesorios */}
+      {nuevosAccesorios.length > 0 && (
+        <div className="productos-nuevos-agregados">
+          <h2 style={{ color: '#10b981' }}>Nuevos productos agregados</h2>
+          <div className="productos-grid">
+            {nuevosAccesorios.map(producto => (
+              <div className="producto-card" key={producto.id}>
+                <img src={producto.foto || '/images/Productos/default.png'} alt={producto.nombre} style={{ maxHeight: 120 }} />
+                <h4>{producto.nombre}</h4>
+                <p className="precio">${producto.precio}</p>
+                <p><b>Categoría:</b> {producto.categoria_nombre}</p>
+                {producto.subcategoria_nombre && <p><b>Subcategoría:</b> {producto.subcategoria_nombre}</p>}
+                <p><b>Marca:</b> {producto.marca_nombre}</p>
+                <p style={{ fontSize: '0.9em', color: '#555' }}>{producto.descripcion}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
           <h1 style={{ 
@@ -136,7 +162,6 @@ const Accesorios = () => {
             Encuentra los mejores accesorios para tus dispositivos
           </p>
         </div>
-
         <div style={{ display: 'flex', gap: '20px' }}>
           {/* Panel de filtros */}
           <div style={{

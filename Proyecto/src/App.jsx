@@ -32,6 +32,7 @@ import Carrito from './paginas/Carrito.jsx';
 import Checkout from './paginas/Checkout.jsx';
 import CheckoutConfirmacion from './paginas/CheckoutConfirmacion.jsx';
 import { CartProvider } from './context/CartContext.jsx';
+import { ProductNotificationProvider } from './context/ProductNotificationContext.jsx';
 import { useToast } from './componentes/ToastNotification.jsx';
 
 function App() {
@@ -62,10 +63,11 @@ function App() {
 
   return (
     <GoogleOAuthProvider clientId="141507994341-b9ui76hmevjib897dm05b777i6clnqo9.apps.googleusercontent.com">
-      <CartProvider>
-        <Router>
-          <Header user={user} onLogout={() => handleUserChange(null)} />
-          <Nav />
+      <ProductNotificationProvider>
+        <CartProvider>
+          <Router>
+            <Header user={user} onLogout={() => handleUserChange(null)} />
+            <Nav user={user} />
 
         <Routes>
           <Route path="/" element={<Home user={user} />} />
@@ -127,6 +129,7 @@ function App() {
         <ToastContainer />
       </Router>
     </CartProvider>
+    </ProductNotificationProvider>
     </GoogleOAuthProvider>
   );
 }

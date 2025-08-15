@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import NewProductsSection from './componentes/NewProductsSection.jsx';
 import './assets/css/index.css';
 
 const Home = () => {
@@ -61,6 +62,9 @@ const Home = () => {
           <label htmlFor="hero-slide3" className="hero-indicator"></label>
         </div>
       </div>
+
+      {/* ===================== SECCIÓN NUEVO STOCK ===================== */}
+      <NewProductsSection />
 
       {/* ===================== SECCIÓN DE PRODUCTOS ===================== */}
       <section className="seccion-productos">

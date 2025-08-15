@@ -1,11 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { fetchWithAuth } from '../utils/fetchWithAuth';
+import { useProductNotification } from '../context/ProductNotificationContext';
 import '../assets/css/Paginas/Productos/Productos.css';
 import '../assets/css/SesionExpirada.css';
 
 const API_URL = 'http://localhost:3000/productos';
 
 export default function AdministrarProductos() {
+  const { addProductNotification } = useProductNotification();
+  
+  // Log para verificar que el hook está funcionando
+  console.log('🔌 ProductosAdmin - useProductNotification hook:', {
+    addProductNotification: typeof addProductNotification,
+    available: !!addProductNotification
+  });
+  
   const [productos, setProductos] = useState([]);
   const [form, setForm] = useState({ nombre: '', descripcion: '', foto: '', precio: '', categoria_id: '', subcategoria_id: '', marca_id: '' });
   const [categorias, setCategorias] = useState([]);
@@ -135,6 +144,11 @@ export default function AdministrarProductos() {
   const handleSubmit = async e => {
     e.preventDefault();
     setError('');
+    console.log('🚀 Enviando producto:', {
+      method: editId ? 'PUT' : 'POST',
+      url: editId ? `${API_URL}/${editId}` : API_URL,
+      form
+    });
     try {
       const method = editId ? 'PUT' : 'POST';
       const url = editId ? `${API_URL}/${editId}` : API_URL;
@@ -153,10 +167,74 @@ export default function AdministrarProductos() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       });
-      if (!res.ok) throw new Error('Error al guardar');
-      window.location.reload();
-    } catch {
-      setError('No autorizado o error al guardar');
+      if (!res.ok) {
+        const errorData = await res.text();
+        console.error('❌ Error response:', errorData);
+        throw new Error('Error al guardar');
+      }
+      const result = await res.json();
+      console.log('✅ Respuesta del servidor completa:', result);
+      if (!editId) {
+        let productoCompleto;
+        if (result && result.product) {
+          productoCompleto = result.product;
+        } else {
+          productoCompleto = {
+            id: result.id || Date.now(),
+            nombre: form.nombre,
+            descripcion: form.descripcion,
+            foto: form.foto,
+            precio: form.precio,
+            categoria_id: form.categoria_id,
+            subcategoria_id: form.subcategoria_id,
+            marca_id: form.marca_id,
+            categoria_nombre: categorias.find(c => c.id == form.categoria_id)?.nombre || 'Sin categoría',
+            subcategoria_nombre: subcategorias.find(s => s.id == form.subcategoria_id)?.nombre || '',
+            marca_nombre: marcas.find(m => m.id == form.marca_id)?.nombre || 'Sin marca'
+          };
+        }
+        // Agregar notificación y producto al estado local
+        addProductNotification(productoCompleto);
+        setProductos(prev => [productoCompleto, ...prev]);
+        // Notificación visual temporal
+        const ubicacion = [
+          productoCompleto.categoria_nombre,
+          productoCompleto.subcategoria_nombre,
+          productoCompleto.marca_nombre
+        ].filter(Boolean).join(' → ');
+        const notification = document.createElement('div');
+        notification.innerHTML = `
+          <div style="
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            z-index: 10000;
+            max-width: 300px;
+          ">
+            <strong>✅ Producto creado!</strong><br>
+            <small>Ubicado en: ${ubicacion}</small><br>
+            <small>Verifica el navbar para más detalles</small>
+          </div>
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 5000);
+        // Limpiar formulario
+        setForm({ nombre: '', descripcion: '', foto: '', precio: '', categoria_id: '', subcategoria_id: '', marca_id: '' });
+        setShowForm(false);
+        setEditId(null);
+      }
+    } catch (error) {
+      console.error('❌ Error completo:', error);
+      setError('No autorizado o error al guardar. Revisa la consola para más detalles.');
     }
   };
 

@@ -3,6 +3,8 @@ import ProductosAdmin from './productos.jsx';
 import CategoriasAdmin from './CategoriasAdmin.jsx';
 import SubcategoriasAdmin from './SubcategoriasAdmin.jsx';
 import MarcasAdmin from './MarcasAdmin.jsx';
+import DebugCategorias from '../componentes/DebugCategorias.jsx';
+import NotificationDebug from '../componentes/NotificationDebug.jsx';
 
 const tabs = [
   { key: 'productos', label: 'Productos' },
@@ -36,10 +38,14 @@ export default function PanelAdmin() {
       </aside>
       {/* Contenido */}
       <main style={{ flex: 1, padding: '36px 24px' }}>
-  {tab === 'productos' && <ProductosAdmin />}
-  {tab === 'categorias' && <CategoriasAdmin />}
-  {tab === 'subcategorias' && <SubcategoriasAdmin />}
-  {tab === 'marcas' && <MarcasAdmin />}
+        {/* Debug components - temporales */}
+        <NotificationDebug />
+        <DebugCategorias />
+        
+        {tab === 'productos' && <ProductosAdmin />}
+        {tab === 'categorias' && <CategoriasAdmin />}
+        {tab === 'subcategorias' && <SubcategoriasAdmin />}
+        {tab === 'marcas' && <MarcasAdmin />}
       </main>
     </div>
   );
