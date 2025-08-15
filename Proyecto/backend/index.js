@@ -75,9 +75,50 @@ app.post('/logout', (req, res) => {
 });
 
 // Ver productos (usuarios autenticados) con información completa
-app.get('/productos', requireLogin, async (req, res) => {
+// Endpoint con filtros: /api/productos
+app.get('/api/productos', async (req, res) => {
   try {
-    const result = await query(`
+    let filtros = [];
+    let valores = [];
+    let idx = 1;
+    
+    // Filtro por categoría (por ID, no nombre)
+    if (req.query.categoria) {
+      filtros.push(`c.id = $${idx++}`);
+      valores.push(req.query.categoria);
+    }
+    
+    // Filtro por búsqueda
+    if (req.query.busqueda) {
+      filtros.push(`(p.nombre ILIKE $${idx} OR p.descripcion ILIKE $${idx})`);
+      valores.push(`%${req.query.busqueda}%`);
+      idx++;
+    }
+    
+    // Filtro por precio mínimo
+    if (req.query.precioMin) {
+      filtros.push(`p.precio >= $${idx++}`);
+      valores.push(Number(req.query.precioMin));
+    }
+    
+    // Filtro por precio máximo
+    if (req.query.precioMax) {
+      filtros.push(`p.precio <= $${idx++}`);
+      valores.push(Number(req.query.precioMax));
+    }
+    
+    // Filtro por subcategoría
+    if (req.query.subcategoria) {
+      filtros.push(`s.id = $${idx++}`);
+      valores.push(req.query.subcategoria);
+    }
+    
+    // Filtro por marca
+    if (req.query.marca) {
+      filtros.push(`m.id = $${idx++}`);
+      valores.push(req.query.marca);
+    }
+    let sql = `
       SELECT 
         p.*,
         c.nombre as categoria_nombre,
@@ -87,8 +128,12 @@ app.get('/productos', requireLogin, async (req, res) => {
       LEFT JOIN categorias c ON p.categoria_id = c.id
       LEFT JOIN subcategorias s ON p.subcategoria_id = s.id  
       LEFT JOIN marcas m ON p.marca_id = m.id
-      ORDER BY p.id DESC
-    `);
+    `;
+    if (filtros.length > 0) {
+      sql += ' WHERE ' + filtros.join(' AND ');
+    }
+    sql += ' ORDER BY p.id DESC';
+    const result = await query(sql, valores);
     res.json(result.rows);
   } catch (error) {
     console.error('Error al obtener productos:', error);
@@ -194,13 +239,23 @@ app.post('/usuarios/admin', requireLogin, requireAdmin, async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor backend en puerto ${PORT}`));
+
+// Endpoint público para marcas
+app.get('/api/marcas/public', async (req, res) => {
+  try {
+    const result = await query('SELECT * FROM marcas ORDER BY nombre');
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error al obtener marcas públicas:', error);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
 
 
 // ENDPOINTS PARA CATEGORÍAS, SUBCATEGORÍAS Y MARCAS
 
 // Endpoint público para categorías (para el navbar)
-app.get('/categorias/public', async (req, res) => {
+app.get('/api/categorias/public', async (req, res) => {
   try {
     const result = await query('SELECT * FROM categorias ORDER BY nombre');
     res.json(result.rows);
@@ -255,7 +310,7 @@ app.delete('/categorias/:id', requireLogin, requireAdmin, async (req, res) => {
 
 
 // Endpoint público para subcategorías (para el navbar y notificaciones)
-app.get('/subcategorias/public', async (req, res) => {
+app.get('/api/subcategorias/public', async (req, res) => {
   try {
     const { categoria_id } = req.query;
     let sql = 'SELECT * FROM subcategorias';
@@ -360,3 +415,6 @@ app.delete('/marcas/:id', requireLogin, requireAdmin, async (req, res) => {
   await query('DELETE FROM marcas WHERE id=$1', [req.params.id]);
   res.json({ mensaje: `Marca eliminada. ${prods.rows.length} productos quedaron sin marca.` });
 });
+
+// Iniciar el servidor
+app.listen(PORT, () => console.log(`Servidor backend en puerto ${PORT}`));

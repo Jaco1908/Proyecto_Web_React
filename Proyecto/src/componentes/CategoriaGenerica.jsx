@@ -4,11 +4,17 @@ import FiltrosDinamicos from '../componentes/FiltrosDinamicos';
 import ProductosList from '../componentes/ProductosList';
 import useProductos from '../hooks/useProductos';
 import { useProductNotification } from '../context/ProductNotificationContext';
-import '../assets/css/Accesorios.css';
 
-const Accesorios = () => {
-  // Filtrar solo productos de la categoría accesorios (ID 15)
-  const filtrosIniciales = { categoria: '15' };
+const CategoriaGenerica = ({ 
+  categoriaId,
+  nombreCategoria,
+  icono,
+  descripcion,
+  subcategorias = [],
+  rutaBreadcrumb
+}) => {
+  // Filtrar productos de la categoría específica
+  const filtrosIniciales = { categoria: categoriaId };
   
   const {
     productos,
@@ -22,10 +28,10 @@ const Accesorios = () => {
 
   const { newProducts } = useProductNotification();
   
-  // Filtrar productos nuevos de accesorios
-  const nuevosAccesorios = newProducts.filter(p => {
+  // Filtrar productos nuevos de esta categoría
+  const nuevosProductosCategoria = newProducts.filter(p => {
     if (!p.categoria_nombre) return false;
-    return p.categoria_nombre.toLowerCase().includes('accesorio');
+    return p.categoria_nombre.toLowerCase().includes(nombreCategoria.toLowerCase());
   });
 
   if (error) {
@@ -38,7 +44,7 @@ const Accesorios = () => {
           borderRadius: '12px',
           margin: '20px 0'
         }}>
-          <h2 style={{ color: '#c53030' }}>Error al cargar accesorios</h2>
+          <h2 style={{ color: '#c53030' }}>Error al cargar {nombreCategoria.toLowerCase()}</h2>
           <p style={{ color: '#742a2a' }}>{error}</p>
           <button 
             onClick={() => window.location.reload()}
@@ -62,19 +68,18 @@ const Accesorios = () => {
   return (
     <div className="pagina-container">
       <div className="breadcrumb">
-        <Link to="/">Inicio</Link> &gt; <span>Accesorios</span>
+        <Link to="/">Inicio</Link> &gt; <span>{nombreCategoria}</span>
       </div>
       
       <div className="categoria-header">
-        <h1>🎒 Accesorios Tecnológicos</h1>
+        <h1>{icono} {nombreCategoria}</h1>
         <div className="categoria-descripcion">
-          <p>Descubre nuestra amplia selección de accesorios para mejorar tu experiencia tecnológica. 
-             Desde mochilas especializadas hasta auriculares de última generación.</p>
+          <p>{descripcion}</p>
         </div>
       </div>
 
       {/* Notificación de productos nuevos */}
-      {nuevosAccesorios.length > 0 && (
+      {nuevosProductosCategoria.length > 0 && (
         <div className="nuevos-productos-alerta" style={{
           background: 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)',
           color: 'white',
@@ -86,16 +91,16 @@ const Accesorios = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span style={{ fontSize: '1.5rem' }}>🎉</span>
             <div>
-              <h3 style={{ margin: '0 0 4px 0', fontSize: '1.1rem' }}>¡Nuevos Accesorios Disponibles!</h3>
+              <h3 style={{ margin: '0 0 4px 0', fontSize: '1.1rem' }}>¡Nuevos Productos Disponibles!</h3>
               <p style={{ margin: 0, fontSize: '0.9rem', opacity: 0.9 }}>
-                {nuevosAccesorios.length} nuevo{nuevosAccesorios.length !== 1 ? 's' : ''} producto{nuevosAccesorios.length !== 1 ? 's' : ''} agregado{nuevosAccesorios.length !== 1 ? 's' : ''} recientemente
+                {nuevosProductosCategoria.length} nuevo{nuevosProductosCategoria.length !== 1 ? 's' : ''} producto{nuevosProductosCategoria.length !== 1 ? 's' : ''} en {nombreCategoria.toLowerCase()}
               </p>
             </div>
           </div>
         </div>
       )}
 
-      <div className="accesorios-layout" style={{
+      <div className="categoria-layout" style={{
         display: 'grid',
         gridTemplateColumns: '280px 1fr',
         gap: '30px',
@@ -128,7 +133,7 @@ const Accesorios = () => {
                 height: '40px',
                 animation: 'spin 1s linear infinite'
               }}></div>
-              <p style={{ color: '#4a5568', fontSize: '1.1rem' }}>Cargando accesorios...</p>
+              <p style={{ color: '#4a5568', fontSize: '1.1rem' }}>Cargando {nombreCategoria.toLowerCase()}...</p>
             </div>
           ) : totalProductos === 0 ? (
             <div className="no-productos" style={{
@@ -141,10 +146,10 @@ const Accesorios = () => {
             }}>
               <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🔍</div>
               <h3 style={{ color: '#4a5568', fontSize: '1.5rem', marginBottom: '10px' }}>
-                No se encontraron accesorios
+                No se encontraron productos
               </h3>
               <p style={{ color: '#718096', fontSize: '1rem', marginBottom: '30px' }}>
-                Intenta ajustar los filtros para encontrar los accesorios que buscas
+                Intenta ajustar los filtros para encontrar lo que buscas en {nombreCategoria.toLowerCase()}
               </p>
               <button
                 onClick={limpiarFiltros}
@@ -160,7 +165,7 @@ const Accesorios = () => {
                   fontWeight: '500'
                 }}
               >
-                Ver todos los accesorios
+                Ver todos los productos de {nombreCategoria.toLowerCase()}
               </button>
             </div>
           ) : (
@@ -170,30 +175,24 @@ const Accesorios = () => {
       </div>
 
       {/* Subcategorías destacadas */}
-      <div className="subcategorias-destacadas" style={{ marginTop: '60px' }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '30px' }}>Subcategorías de Accesorios</h2>
-        <div className="subcategorias-grid" style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '20px'
-        }}>
-          <Link to="/subcategoria/accesorios/mochila" className="subcategoria-card">
-            <img src="/images/Prom/Mochila.jpg" alt="Mochilas" />
-            <h4>Mochilas</h4>
-            <p>Para laptop y gaming</p>
-          </Link>
-          <Link to="/subcategoria/accesorios/auriculares-bluetooth" className="subcategoria-card">
-            <img src="/images/Masvendidos/auidifonos.jpg" alt="Auriculares" />
-            <h4>Auriculares</h4>
-            <p>Bluetooth y cableados</p>
-          </Link>
-          <Link to="/subcategoria/accesorios/grabadora-externo" className="subcategoria-card">
-            <img src="/images/Masvendidos/Micro.jpg" alt="Grabadoras" />
-            <h4>Grabadoras</h4>
-            <p>Audio y video externos</p>
-          </Link>
+      {subcategorias.length > 0 && (
+        <div className="subcategorias-destacadas" style={{ marginTop: '60px' }}>
+          <h2 style={{ textAlign: 'center', marginBottom: '30px' }}>Subcategorías de {nombreCategoria}</h2>
+          <div className="subcategorias-grid" style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '20px'
+          }}>
+            {subcategorias.map((sub, index) => (
+              <Link key={index} to={sub.ruta} className="subcategoria-card">
+                <img src={sub.imagen} alt={sub.nombre} />
+                <h4>{sub.nombre}</h4>
+                <p>{sub.descripcion}</p>
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <style jsx>{`
         @keyframes spin {
@@ -201,12 +200,12 @@ const Accesorios = () => {
           100% { transform: rotate(360deg); }
         }
 
-        .accesorios-layout {
+        .categoria-layout {
           margin-top: 30px;
         }
 
         @media (max-width: 768px) {
-          .accesorios-layout {
+          .categoria-layout {
             grid-template-columns: 1fr;
             gap: 20px;
           }
@@ -278,4 +277,4 @@ const Accesorios = () => {
   );
 };
 
-export default Accesorios;
+export default CategoriaGenerica;

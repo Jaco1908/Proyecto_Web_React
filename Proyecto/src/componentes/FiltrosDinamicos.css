@@ -1,0 +1,362 @@
+/* Estilos para el componente FiltrosDinamicos */
+.filtros-dinamicos {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.filtros-dinamicos.compact {
+  margin-bottom: 20px;
+}
+
+.filtros-dinamicos.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.loading-spinner {
+  color: #667eea;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Header de filtros */
+.filtros-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.filtros-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.filtros-badge {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 2px 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.expand-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.expand-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Contenido de filtros */
+.filtros-content {
+  padding: 20px;
+}
+
+.filtro-grupo {
+  margin-bottom: 24px;
+}
+
+.filtro-grupo:last-of-type {
+  margin-bottom: 0;
+}
+
+.filtro-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.filtro-icono {
+  font-size: 1.1rem;
+}
+
+.filtro-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background: white;
+  box-sizing: border-box;
+}
+
+.filtro-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.filtro-input:disabled {
+  background: #f7fafc;
+  color: #a0aec0;
+  cursor: not-allowed;
+}
+
+.filtro-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.filtro-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.filtro-select:disabled {
+  background: #f7fafc;
+  color: #a0aec0;
+  cursor: not-allowed;
+}
+
+/* Rangos de precio */
+.rangos-precio {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rango-btn {
+  padding: 10px 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.rango-btn:hover {
+  border-color: #667eea;
+  background: #f7fafc;
+}
+
+.rango-btn.activo {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: #667eea;
+}
+
+/* Precio personalizado */
+.precio-personalizado .filtro-label {
+  margin-bottom: 12px;
+}
+
+.precio-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.precio-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.precio-separador {
+  color: #718096;
+  font-weight: 500;
+  padding: 0 4px;
+}
+
+/* Resumen de filtros */
+.filtros-resumen {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.productos-encontrados {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.icono-resumen {
+  font-size: 1.1rem;
+}
+
+.texto-resumen {
+  font-size: 1rem;
+}
+
+.filtros-activos {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f7fafc;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.filtros-count {
+  font-size: 0.9rem;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.btn-limpiar {
+  background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-limpiar:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(237, 137, 54, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filtros-dinamicos {
+    border-radius: 8px;
+  }
+
+  .filtros-content {
+    padding: 16px;
+  }
+
+  .filtro-grupo {
+    margin-bottom: 20px;
+  }
+
+  .filtros-header {
+    padding: 12px 16px;
+  }
+
+  .filtros-title {
+    font-size: 1rem;
+  }
+
+  .precio-inputs {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .precio-separador {
+    display: none;
+  }
+
+  .filtros-activos {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .btn-limpiar {
+    width: 100%;
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+
+  .rangos-precio {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filtros-content {
+    padding: 12px;
+  }
+
+  .filtro-input,
+  .filtro-select {
+    padding: 12px;
+    font-size: 16px; /* Previene zoom en iOS */
+  }
+
+  .rangos-precio {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Animaciones */
+.filtros-dinamicos * {
+  transition: all 0.3s ease;
+}
+
+.filtro-input:focus,
+.filtro-select:focus {
+  transform: translateY(-1px);
+}
+
+.rango-btn:active {
+  transform: scale(0.98);
+}
+
+.btn-limpiar:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Estados de carga */
+.filtro-select:disabled,
+.filtro-input:disabled {
+  position: relative;
+}
+
+.filtro-select:disabled::after,
+.filtro-input:disabled::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e2e8f0;
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

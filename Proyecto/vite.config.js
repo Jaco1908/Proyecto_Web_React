@@ -4,7 +4,7 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react({
-    include: ['**/*.jsx', '**/*.js'], // Acepta JSX en .js
+    include: ['**/*.jsx', '**/*.js'],
   })],
   resolve: {
     alias: {
@@ -13,6 +13,9 @@ export default defineConfig({
   },
   server: {
     historyApiFallback: true,
+    proxy: {
+      '/api': 'http://localhost:3000'
+    }
   },
   base: '/',
 });
